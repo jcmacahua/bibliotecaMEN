@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 
 async function dbConnection() {
-    mongoose.connect('mongodb+srv://jcmacahua:1DGAV5t4XNkHdqpR@cluster0.tjer1e7.mongodb.net/libreria?retryWrites=true&w=majority&appName=Cluster0');    
+    mongoose.connect(process.env.DB_CONNECTION_STRING);
     return mongoose.connection;    
 }
 
