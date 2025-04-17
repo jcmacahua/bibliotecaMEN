@@ -1,10 +1,7 @@
-import http from 'http';
+import app from "./src/app.js";
 
-const server = http.createServer((req,res)=>{
-    res.writeHead(200, {"content-type":"text/plain"});
-    res.end('Servidor iniciado...');    
-});
+const PORT = 3000;
 
-server.listen(3000,()=>{
-    console.log('Servidor iniciado...');
+app.listen(PORT,()=>{
+    console.log("Servidor express iniciado");
 })
