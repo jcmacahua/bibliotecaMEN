@@ -1,11 +1,18 @@
+import { autorModel } from "../models/autor.js";
 import libroModel from "../models/libros.js";
 
 class libroController{
     async getLibros (req, res){
-        const listaLibros = await libroModel.find({});
-        res.status(200).json(listaLibros);     
-         //respuesta del modelo de prueba
-         //res.status(200).json(librosActuales);
+        try {
+            const listaLibros = await libroModel.find({});
+            res.status(200).json(listaLibros);     
+            //respuesta del modelo de prueba
+            //res.status(200).json(librosActuales);
+        } catch (error) {
+            res.status(500).json({
+                error:`Error: ${error.message}`,
+                message:`No se pudo obtener el listadode libros`});
+        }
      }
      
     async getLibrosById(req, res){
@@ -26,7 +33,10 @@ class libroController{
 
     async createLibros(req, res){
         try {
-            const nuevoLibro = await libroModel.create(req.body);
+            const dataLibro = req.body;
+            const autorlibro = await autorModel.findById(dataLibro.autor);
+            const libroCompleto = {...dataLibro, autor: {...autorlibro._doc}}
+            const nuevoLibro = await libroModel.create(libroCompleto);
             res.status(201).json({
                 result:true,
                 nuevoLibro: nuevoLibro
@@ -81,6 +91,20 @@ class libroController{
         //const index = buscaLibro(Number(req.params.id));
         //librosActuales.splice(index,1);
         //res.status(200).send('Libro borrado con exito');
+    }
+
+    async getLibrosByParams(req, res){
+        try {
+            const {editorial} = req.query;
+            const listaLibros = await libroModel.find({editorial}); //el parametro puede ser mandado {editorial:editorial}
+            res.status(200).json(listaLibros);     
+            
+        } catch (error) {
+            res.status(500).json({
+                error:`Error: ${error.message}`,
+                message:`No se pudo consultar los libros por parametro`
+            });
+        }
     }
 }
 
