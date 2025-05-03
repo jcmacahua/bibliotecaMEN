@@ -1,12 +1,18 @@
 import express from "express";
 import dbConnection from "./config/dbConnection.js";
 import indexRoutes from "./routes/index.js";
+import gestionErrores from "./middlewares/getionErrores.js";
+import gestion404 from "./middlewares/gestion404.js";
 //import libroModel from "./models/libros.js";
 
 //servidor local
 const app = express();
 
 indexRoutes(app);
+//llamado al middleware para gestionar error 404
+app.use(gestion404);
+//Llamado del middleware para gestionar errores
+app.use(gestionErrores);
 
 //conexion a la base de datos
 const db = await dbConnection();

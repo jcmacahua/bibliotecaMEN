@@ -7,10 +7,11 @@ const libroSchema = new mongoose.Schema({
     },
     titulo:{        
         type: String,
-        required: true,
+        required: [true, "El título del libro es obligatorio"],
     },
     editorial:{   
-        type: String,     
+        type: String,
+        required: [true, "La editorial del libro es obligatorio"]
     },
     precio:{
         type: Number,
@@ -18,7 +19,10 @@ const libroSchema = new mongoose.Schema({
     paginas:{
         type: Number,
     },
-    autor: autorSchema,
+    autor: {
+        type: autorSchema,
+        required: [true, "El autor del libro es obligatorio"]
+    } 
 },{versionKey: false});
 
 const libroModel = mongoose.model('libros',libroSchema);

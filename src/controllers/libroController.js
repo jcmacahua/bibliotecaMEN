@@ -1,29 +1,55 @@
+//import mongoose from "mongoose";
 import { autorModel } from "../models/autor.js";
 import libroModel from "../models/libros.js";
 
 class libroController{
-    async getLibros (req, res){
-        try {
+    async getLibros (req, res,next){
+        try {            
+            //con await se tiene control de las respuestas, se espera a que se tenga una respuesta
             const listaLibros = await libroModel.find({});
-            res.status(200).json(listaLibros);     
+            res.status(200).json(listaLibros);
+
+            //con una promesa el sistema continua trabajando y una vez que se tenga la respuesta se muentra
+            //trabajo con promesas
+       /*      libroModel.find((err,listaLibros)=>{
+                res.status(200).json(listaLibros);
+            }); */
             //respuesta del modelo de prueba
             //res.status(200).json(librosActuales);
         } catch (error) {
-            res.status(500).json({
+            next(error);
+            /* res.status(500).json({
                 error:`Error: ${error.message}`,
-                message:`No se pudo obtener el listadode libros`});
+                message:`No se pudo obtener el listadode libros`}); */
         }
      }
      
-    async getLibrosById(req, res){
+    async getLibrosById(req, res, next){
         const id = req.params.id;
         try {
-            const libro = await libroModel.findById(id);
-            res.status(200).json(libro);
+            const libro = await libroModel.findById(id);            
+            //replicar en las demas peticiones para mejor gestionar mejor los errores
+            if(libro!=null){
+                res.status(200).json(libro);
+            }else{
+                res.status(404).send({
+                    message:'libro no encontrado'
+                });
+            }            
         } catch (error) {
-            res.status(500).json({
-                error:`Error: ${error.message}`,
-                message:`No se pudo encontrar el libro con id: ${id}`});
+            //gestionando los errores de mongoDB
+          /*   if(error instanceof mongoose.Error.CastError){
+                res.status(500).json({
+                    error:`Error: Valor del ID del documento no corresponde - ID:${id}`,
+                    });
+            }else{
+                res.status(500).json({
+                    error:`Error interno: ${error.message}`,
+                    message:`No se pudo encontrar el libro con id: ${id}`});
+            } */
+           //ahora se usara el middleware para gestionar el error declarado en app.js, haciendo uso del parametro next de la funsión.
+           next(error);
+
         }
         //const id= Number(req.params.id);
         //solicitud del modelo de pruebas
@@ -31,7 +57,7 @@ class libroController{
         //res.status(200).json(librosActuales[index]);
     }
 
-    async createLibros(req, res){
+    async createLibros(req, res, next){
         try {
             const dataLibro = req.body;
             const autorlibro = await autorModel.findById(dataLibro.autor);
@@ -42,10 +68,11 @@ class libroController{
                 nuevoLibro: nuevoLibro
             });            
         } catch (error) {
-            res.status(500).json({
+          /*   res.status(500).json({
                 error:`Error: ${error.message}`,
                 message:`No se pudo guardar el libro`
-            });
+            }); */
+            next(error);
         }
         //solicitud del modelo de pruebas
         //librosActuales.push(req.body);
@@ -109,4 +136,5 @@ class libroController{
 }
 
 
+// eslint-disable-next-line no-class-assign
 export default libroController = new libroController();

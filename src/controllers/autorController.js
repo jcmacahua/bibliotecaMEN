@@ -84,5 +84,5 @@ class autorController{
     }
 }
 
-
+// eslint-disable-next-line no-class-assign
 export default autorController = new autorController();
