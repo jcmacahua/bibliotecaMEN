@@ -1,4 +1,4 @@
-import {autorModel} from "../models/autor.js";
+import {autorModel} from "../models/index.js";
 
 class autorController{
     async getAutores (req, res){
