@@ -1,6 +1,6 @@
 //import mongoose from "mongoose";
-import { autorModel } from "../models/autor.js";
-import libroModel from "../models/libros.js";
+import { autorModel, libroModel  } from "../models/index.js";
+//import libroModel from "../models/libros.js";
 
 class libroController{
     async getLibros (req, res,next){
@@ -122,8 +122,8 @@ class libroController{
 
     async getLibrosByParams(req, res){
         try {
-            const {editorial} = req.query;
-            const listaLibros = await libroModel.find({editorial}); //el parametro puede ser mandado {editorial:editorial}
+
+            const listaLibros = await libroModel.find(procesaParametros(req.query)); //el parametro puede ser mandado {editorial:editorial}
             res.status(200).json(listaLibros);     
             
         } catch (error) {
@@ -135,6 +135,45 @@ class libroController{
     }
 }
 
+function procesaParametros(query){
+    const {editorial, titulo, minPag, maxPag, nombreAutor, nacionalidad} = query;
+    const criterios = {};
+
+    //const regex = new RegExp(titulo,"i");
+    //se asigna una expresion regular para realizar busquedas por parametros siendo insensible a matusculas y minusculas
+    if(editorial){
+        criterios.editorial = new RegExp(editorial,"i");;
+    }
+
+    if(titulo){
+        criterios.titulo = new RegExp(titulo,"i");;
+    }
+
+    if(minPag || maxPag){
+        criterios.paginas = {}
+    }
+
+    if(minPag){
+        criterios.paginas.$gte = minPag;
+    }
+
+    if(maxPag){
+        criterios.paginas.$lte = maxPag;
+    }
+
+    if(nombreAutor){
+        criterios['autor.nombre'] = new RegExp(nombreAutor,"i");
+        //otra forma de especificar los criterioes es
+        //criterios['autor.nombre'] = {$regex: titulo, $options: 'i'};
+    }
+
+    if(nacionalidad){
+        criterios['autor.nacionalidad'] = new RegExp(nacionalidad,"i");
+    }
+
+    return criterios;
+
+}
 
 // eslint-disable-next-line no-class-assign
 export default libroController = new libroController();
